@@ -7,8 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.anyOf;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class GetPetTest {
 
@@ -22,7 +21,7 @@ public class GetPetTest {
 
     @Test
     public void getPetById() {
-        int id = 4;
+        int id = 182;
         given()
                 .log()
                 .all()
@@ -31,65 +30,36 @@ public class GetPetTest {
                 .then()
                 .log()
                 .all()
-                .body("id", anyOf(is(id), is("some_text")))
+                .body( "id", anyOf(is(id), is("available")))
                 .statusCode(200);
     }
 
     @Test
-    public void getPetByStatusAvailable() {
+    public void getPetByStatus() {
         String status = "available";
         given()
                 .log()
                 .all()
-                .baseUri("https://petstore.swagger.io/v2")
                 .when()
                 .param("status", status)
                 .get("/pet/findByStatus")
                 .then()
                 .log()
                 .all()
+                .body("status", everyItem(equalTo(status)))
                 .statusCode(200);
     }
 
     @Test
-    public void getPetByStatusSold() {
-        String status = "pending";
-        given()
-                .log()
-                .all()
-                .baseUri("https://petstore.swagger.io/v2")
-                .when()
-                .get("/pet/findByStatus?status={status}", status)
-                .then()
-                .log()
-                .all()
-                .statusCode(200);
-    }
-
-    @Test
-    public void getFindByStatusPending() {
-        String status = "sold";
-        given()
-                .log()
-                .all()
-                .baseUri("https://petstore.swagger.io/v2")
-                .when()
-                .get("/pet/findByStatus?status={status}", status)
-                .then()
-                .log()
-                .all()
-                .statusCode(200);
-    }
-
-    @Test
-    public void addNewPetToStore() {
+    public void createNewPet() {
+        int id = 182;
         String body = "{\n" +
-                "  \"id\": 4564,\n" +
+                "  \"id\": \""+ id +"\",\n" +
                 "  \"category\": {\n" +
                 "    \"id\": 0,\n" +
                 "    \"name\": \"string\"\n" +
                 "  },\n" +
-                "  \"name\": \"UmaTurman\",\n" +
+                "  \"name\": \"Scooby\",\n" +
                 "  \"photoUrls\": [\n" +
                 "    \"string\"\n" +
                 "  ],\n" +
@@ -104,51 +74,50 @@ public class GetPetTest {
         given()
                 .log()
                 .all()
-                .baseUri("https://petstore.swagger.io/v2")
-                .contentType(ContentType.JSON)
                 .body(body)
                 .when()
                 .post("/pet")
                 .then()
                 .log()
                 .all()
+                .body( "id", is(id))
                 .statusCode(200);
     }
 
     @Test
     public void updatePetByDataForm() {
-        String id = RandomStringUtils.randomNumeric(3);
+        String id = "523";
         given()
                 .log()
                 .all()
-                .baseUri("https://petstore.swagger.io/v2")
                 .contentType("application/x-www-form-urlencoded")
-                .param("name", "Jackie")
-                .param("status", "Sold")
+                .params("name", "Sezam", "status", "pending")
                 .when()
                 .post("/pet/{id}", id)
                 .then()
                 .log()
                 .all()
+                .body("message", is(id))
                 .statusCode(200);
     }
 
     @Test
-    public void updateExistingPet() {
+    public void updatePet() {
+        int id = 182;
         String body = "{\n" +
-                "  \"id\": 644,\n" +
+                "  \"id\": \""+ id +"\",\n" +
                 "  \"category\": {\n" +
                 "    \"id\": 0,\n" +
                 "    \"name\": \"string\"\n" +
                 "  },\n" +
-                "  \"name\": \"Homer\",\n" +
+                "  \"name\": \"Snoopy\",\n" +
                 "  \"photoUrls\": [\n" +
                 "    \"string\"\n" +
                 "  ],\n" +
                 "  \"tags\": [\n" +
                 "    {\n" +
-                "      \"id\": 0,\n" +
-                "      \"name\": \"string\"\n" +
+                "      \"id\": 182,\n" +
+                "      \"name\": \"Snoopy\"\n" +
                 "    }\n" +
                 "  ],\n" +
                 "  \"status\": \"available\"\n" +
@@ -156,29 +125,30 @@ public class GetPetTest {
         given()
                 .log()
                 .all()
-                .baseUri("https://petstore.swagger.io/v2")
-                .contentType(ContentType.JSON)
                 .body(body)
                 .when()
                 .put("/pet")
                 .then()
                 .log()
                 .all()
+                .body( "name", is("Snoopy"))
                 .statusCode(200);
     }
 
     @Test
     public void deletePetById() {
-        int id = 4564;
+        //ToDo: create pet
+        int id = 182;
+
         given()
                 .log()
                 .all()
-                .baseUri("https://petstore.swagger.io/v2")
                 .when()
                 .delete("/pet/{id}", id)
                 .then()
                 .log()
                 .all()
+                .body("message", is(String.valueOf(id)))
                 .statusCode(200);
     }
 

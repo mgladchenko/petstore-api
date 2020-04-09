@@ -2,7 +2,9 @@
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
+import io.restassured.response.ValidatableResponse;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,26 +13,79 @@ import static org.hamcrest.Matchers.*;
 
 public class GetPetTest {
 
+    long createdPetId;
+
     @Before
-    public void before() {
+    public void before2() {
         RequestSpecBuilder spec = new RequestSpecBuilder();
         spec.setBaseUri("https://petstore.swagger.io/v2");
         spec.addHeader("Content-Type", "application/json");
         RestAssured.requestSpecification = spec.build();
     }
 
-    @Test
-    public void getPetById() {
-        int id = 182;
+    @Before
+    public void before1() {
+        int id = 0;
+        String body = "{\n" +
+                "  \"id\": \""+ id +"\",\n" +
+                "  \"category\": {\n" +
+                "    \"id\": 0,\n" +
+                "    \"name\": \"string\"\n" +
+                "  },\n" +
+                "  \"name\": \"Scooby\",\n" +
+                "  \"photoUrls\": [\n" +
+                "    \"string\"\n" +
+                "  ],\n" +
+                "  \"tags\": [\n" +
+                "    {\n" +
+                "      \"id\": 0,\n" +
+                "      \"name\": \"string\"\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"status\": \"available\"\n" +
+                "}";
+        ValidatableResponse response = given()
+                .log()
+                .all()
+                .body(body)
+                .when()
+                .post("/pet")
+                .then()
+                .log()
+                .all()
+                //.body( "id", is(id))
+                .statusCode(200);
+
+        createdPetId = response.extract().path("id");
+        System.out.println(createdPetId);
+    }
+
+    @After
+    public void after() {
         given()
                 .log()
                 .all()
                 .when()
-                .get("/pet/{id}", id)
+                .delete("/pet/{id}", createdPetId)
                 .then()
                 .log()
                 .all()
-                .body( "id", anyOf(is(id), is("available")))
+                .body("message", is(String.valueOf(createdPetId)))
+                .statusCode(200);
+    }
+
+    @Test
+    public void getPetById() {
+        //int id = 182;
+        given()
+                .log()
+                .all()
+                .when()
+                .get("/pet/{id}", createdPetId)
+                .then()
+                .log()
+                .all()
+                .body( "id", anyOf(is(createdPetId), is("available")))
                 .statusCode(200);
     }
 
@@ -52,7 +107,7 @@ public class GetPetTest {
 
     @Test
     public void createNewPet() {
-        int id = 182;
+        int id = 0;
         String body = "{\n" +
                 "  \"id\": \""+ id +"\",\n" +
                 "  \"category\": {\n" +
@@ -71,7 +126,7 @@ public class GetPetTest {
                 "  ],\n" +
                 "  \"status\": \"available\"\n" +
                 "}";
-        given()
+        ValidatableResponse response = given()
                 .log()
                 .all()
                 .body(body)
@@ -80,8 +135,11 @@ public class GetPetTest {
                 .then()
                 .log()
                 .all()
-                .body( "id", is(id))
+                //.body( "id", is(id))
                 .statusCode(200);
+
+        long createdPetId = response.extract().path("id");
+        System.out.println(createdPetId);
     }
 
     @Test

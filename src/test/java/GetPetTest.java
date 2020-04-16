@@ -6,32 +6,13 @@ import org.junit.Test;
 
 public class GetPetTest {
 
-    PetEndpoint petEndpoint = new PetEndpoint();
-
-    long createdPetId;
+    private PetEndpoint petEndpoint = new PetEndpoint();
+    private long createdPetId;
 
     @Before
     public void createPet() {
-        int id = 0;
-        String body = "{\n" +
-                "  \"id\": \""+ id +"\",\n" +
-                "  \"category\": {\n" +
-                "    \"id\": 0,\n" +
-                "    \"name\": \"string\"\n" +
-                "  },\n" +
-                "  \"name\": \"Scooby\",\n" +
-                "  \"photoUrls\": [\n" +
-                "    \"string\"\n" +
-                "  ],\n" +
-                "  \"tags\": [\n" +
-                "    {\n" +
-                "      \"id\": 0,\n" +
-                "      \"name\": \"string\"\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"status\": \"available\"\n" +
-                "}";
-        ValidatableResponse response = petEndpoint.createPet(body);
+        Pet pet = new Pet("0", "chupacabra", "available");
+        ValidatableResponse response = petEndpoint.createPet(pet);
         createdPetId = response.extract().path("id");
     }
 

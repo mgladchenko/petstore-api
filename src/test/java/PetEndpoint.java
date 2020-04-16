@@ -21,9 +21,9 @@ public class PetEndpoint {
                 .all();
     }
 
-    public ValidatableResponse createPet(String body) {
+    public ValidatableResponse createPet(Pet pet) {
         return given()
-                .body(body)
+                .body(pet)
                 .when()
                 .post(CREATE_PET)
                 .then()

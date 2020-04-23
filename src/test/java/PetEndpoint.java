@@ -6,15 +6,18 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 
+import java.io.File;
+
 import static org.apache.http.HttpStatus.SC_OK;
-import static org.hamcrest.Matchers.anyOf;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class PetEndpoint {
 
     private final static String CREATE_PET = "/pet";
     private final static String GET_PET_BY_ID = "/pet/{id}";
+    private final static String GET_PET_BY_STATUS = "/pet/findByStatus";
     private final static String DELETE_PET_BY_ID = "/pet/{id}";
+    private final static String UPLOAD_IMAGE = "/pet/{petId}/uploadImage";
 
     static {
         RestAssured.filters(new RequestLoggingFilter(LogDetail.ALL));
@@ -42,7 +45,17 @@ public class PetEndpoint {
                 .when()
                 .get(GET_PET_BY_ID, petId)
                 .then()
-                .body( "id", anyOf(is(petId), is(Status.AVAILABLE)))
+                .body("id", anyOf(is(petId), is(Status.AVAILABLE)))
+                .statusCode(SC_OK);
+    }
+
+    public ValidatableResponse getPetByStatus(Status status) {
+        return given()
+                .when()
+                .param("status", status)
+                .get(GET_PET_BY_STATUS)
+                .then()
+                .body("status", everyItem(equalTo(status.toString())))
                 .statusCode(SC_OK);
     }
 
@@ -52,6 +65,20 @@ public class PetEndpoint {
                 .delete(DELETE_PET_BY_ID, petId)
                 .then()
                 .body("message", is(String.valueOf(petId)))
+                .statusCode(SC_OK);
+    }
+
+    public ValidatableResponse uploadImage(long petId, String fileName) {
+
+        File file = new File(getClass().getClassLoader().getResource(fileName).getFile());
+
+        return given()
+                .contentType("multipart/form-data")
+                .multiPart(file)
+                .when()
+                .post(UPLOAD_IMAGE, petId)
+                .then()
+                .body("message", allOf(containsString("File uploaded"), containsString(file.getName())))
                 .statusCode(SC_OK);
     }
 

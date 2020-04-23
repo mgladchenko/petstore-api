@@ -1,10 +1,9 @@
-
 import io.restassured.response.ValidatableResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class GetPetTest {
+public class UploadImageTest {
 
     private PetEndpoint petEndpoint = new PetEndpoint();
     private long createdPetId;
@@ -17,17 +16,12 @@ public class GetPetTest {
     }
 
     @Test
-    public void getPetByStatus() {
-        petEndpoint.getPetByStatus(Status.AVAILABLE);
+    public void uploadImage() {
+        petEndpoint.uploadImage(createdPetId, "cat.jpg");
     }
 
     @After
     public void deletePet() {
         petEndpoint.deletePet(createdPetId);
-    }
-
-    @Test
-    public void getPetById() {
-        petEndpoint.getPet(createdPetId);
     }
 }

@@ -10,3 +10,6 @@
 `brew install maven`
 5. Verify that Maven was installed
 `mvn -version`
+
+**View Serenity HTML report:**  
+`mvn serenity:aggregate`

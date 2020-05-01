@@ -10,7 +10,8 @@ import net.thucydides.core.annotations.Step;
 import java.io.File;
 
 import static org.apache.http.HttpStatus.SC_OK;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.CoreMatchers.*;
+//import static org.hamcrest.Matchers.*;
 
 public class PetEndpoint {
 
@@ -48,7 +49,7 @@ public class PetEndpoint {
                 .when()
                 .get(GET_PET_BY_ID, petId)
                 .then()
-                .body("id", anyOf(is(petId), is(Status.AVAILABLE)))
+                .body("id", is(petId))
                 .statusCode(SC_OK);
     }
 

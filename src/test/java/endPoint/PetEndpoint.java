@@ -1,9 +1,13 @@
+package endPoint;
+
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
+import model.Pet;
+import model.Status;
 import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.annotations.Step;
 
@@ -11,7 +15,6 @@ import java.io.File;
 
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.CoreMatchers.*;
-//import static org.hamcrest.Matchers.*;
 
 public class PetEndpoint {
 

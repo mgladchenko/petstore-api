@@ -1,4 +1,9 @@
+package test;
+
+import endPoint.PetEndpoint;
 import io.restassured.response.ValidatableResponse;
+import model.Pet;
+import model.Status;
 import net.serenitybdd.junit.runners.SerenityParameterizedRunner;
 import net.thucydides.core.annotations.Steps;
 import net.thucydides.junit.annotations.TestData;
@@ -33,7 +38,11 @@ public class UploadImageTest {
 
     @Before
     public void createPet() {
-        Pet pet = new Pet("0", "chupacabra", Status.AVAILABLE);
+        Pet pet = Pet.builder()
+                .id("0")
+                .name("chupacabra")
+                .status(Status.AVAILABLE)
+                .build();
         ValidatableResponse response = petEndpoint.createPet(pet);
         createdPetId = response.extract().path("id");
     }
